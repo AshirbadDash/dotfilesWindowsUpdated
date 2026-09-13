@@ -7,7 +7,18 @@ Set-Location $HOME
 # Oh My Posh Prompt
 # ============================================================
 $env:POSH_THEMES_PATH = "$env:USERPROFILE\.config\oh-my-posh\themes"
-oh-my-posh init pwsh --config "C:\Users\swade\.config\oh-my-posh\themes\powerlevel10k_lean.omp.json" | Invoke-Expression
+$defaultTheme = "$env:POSH_THEMES_PATH\agnoster.omp.json"
+$savedThemeFile = "$env:USERPROFILE\.config\oh-my-posh\current_theme.txt"
+
+$activeTheme = $defaultTheme
+if (Test-Path $savedThemeFile) {
+    $savedPath = (Get-Content $savedThemeFile -Raw).Trim()
+    if ($savedPath -and (Test-Path $savedPath)) {
+        $activeTheme = $savedPath
+    }
+}
+
+oh-my-posh init pwsh --config $activeTheme | Invoke-Expression
 
 # ============================================================
 # Terminal Icons  (icons in ls / Get-ChildItem output)
@@ -56,15 +67,11 @@ function theme {
     # Apply theme for this session
     oh-my-posh init pwsh --config $file | Invoke-Expression
 
-    # Persist to profile for next sessions
-    $profile_content = Get-Content $PROFILE -Raw
-    $updated = $profile_content -replace `
-        '(oh-my-posh init pwsh --config "C:\Users\swade\.config\oh-my-posh\themes\powerlevel10k_lean.omp.json"]*(")', `
-        "`${1}$file`${2}"
-    [System.IO.File]::WriteAllText($PROFILE, $updated, [System.Text.UTF8Encoding]::new($false))
+    # Save active theme choice to current_theme.txt
+    [System.IO.File]::WriteAllText("$env:USERPROFILE\.config\oh-my-posh\current_theme.txt", $file, [System.Text.UTF8Encoding]::new($false))
 
     Write-Host "Theme set to '$Name'" -ForegroundColor Green
-    Write-Host "(Saved to profile — will persist on next open)" -ForegroundColor DarkGray
+    Write-Host "(Saved choice — will persist across sessions)" -ForegroundColor DarkGray
 }
 
 # ============================================================
