@@ -102,12 +102,38 @@ New-Item -ItemType Directory -Path $profileDir -Force | Out-Null
 Copy-Item "$scriptDir\powershell\profile.ps1" $PROFILE -Force
 Write-OK "Profile copied to $PROFILE"
 
-# ── 8. Copy Oh My Posh Theme ─────────────────────────────────────────────────
-Write-Step "Copying Oh My Posh theme"
+# ── 8. Copy / Download Oh My Posh Themes ────────────────────────────────────
+Write-Step "Setting up Oh My Posh themes"
 $themesDir = "$env:USERPROFILE\.config\oh-my-posh\themes"
 New-Item -ItemType Directory -Path $themesDir -Force | Out-Null
-Copy-Item "$scriptDir\ohmyposh\themes\*" $themesDir -Force
-Write-OK "Theme(s) copied to $themesDir"
+
+$repoThemesDir = "$scriptDir\ohmyposh\themes"
+$repoBaseUrl   = "https://raw.githubusercontent.com/AshirbadDash/dotfilesWindowsUpdated/main/ohmyposh/themes"
+
+$themeFiles = @(
+    "agnoster", "atomic", "catppuccin", "catppuccin_mocha",
+    "dracula", "jandedobbeleer", "night-owl", "powerlevel10k_lean",
+    "pure", "robbyrussell", "tokyo"
+)
+
+foreach ($t in $themeFiles) {
+    $dest = "$themesDir\$t.omp.json"
+    $src  = "$repoThemesDir\$t.omp.json"
+
+    if (Test-Path $src) {
+        # Running from a cloned repo — copy local file
+        Copy-Item $src $dest -Force
+        Write-OK "$t (local)"
+    } else {
+        # Running via irm | iex — download from GitHub
+        try {
+            Invoke-WebRequest -Uri "$repoBaseUrl/$t.omp.json" -OutFile $dest -UseBasicParsing -ErrorAction Stop
+            Write-OK "$t (downloaded)"
+        } catch {
+            Write-Host "    [!!] Could not get theme: $t" -ForegroundColor Yellow
+        }
+    }
+}
 
 # ── 9. Copy Windows Terminal Settings ────────────────────────────────────────
 Write-Step "Copying Windows Terminal settings"
