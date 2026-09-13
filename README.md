@@ -19,7 +19,7 @@ My Windows terminal setup — one command to restore everything on a fresh machi
 Open PowerShell and run:
 
 ```powershell
-irm https://raw.githubusercontent.com/YOUR_USERNAME/dotfiles/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/AshirbadDash/dotfilesWindowsUpdated/main/install.ps1 | iex
 ```
 
 > Requires **winget** (comes pre-installed on Windows 11). If missing, install [App Installer](https://apps.microsoft.com/detail/9nblggh4nns1) from the Microsoft Store first.
@@ -27,15 +27,26 @@ irm https://raw.githubusercontent.com/YOUR_USERNAME/dotfiles/main/install.ps1 | 
 ## Manual Install (clone first)
 
 ```powershell
-git clone https://github.com/YOUR_USERNAME/dotfiles $HOME\dotfiles
+git clone https://github.com/AshirbadDash/dotfilesWindowsUpdated $HOME\dotfiles
 cd $HOME\dotfiles
 .\install.ps1
 ```
 
 ## After install
 
-1. **Set terminal font** — Open Windows Terminal → Settings → Profiles → PowerShell → Appearance → Font: `JetBrainsMono Nerd Font Mono`
-2. **Restart Windows Terminal**
+1. **Restart Windows Terminal**
+
+## Updating dotfiles
+
+After making changes to your profile, theme, or Windows Terminal settings, sync and push:
+
+```powershell
+cd C:\Users\swade\dotfiles
+.\sync.ps1
+git add -A
+git commit -m "update"
+git push
+```
 
 ## Key bindings
 
@@ -49,21 +60,12 @@ cd $HOME\dotfiles
 | `Ctrl+T` | Fuzzy search files |
 | `Ctrl+D` | Exit shell |
 
-## Updating dotfiles
-
-After changing your profile or settings, sync them back:
-
-```powershell
-# From inside your dotfiles folder:
-.\sync.ps1
-```
-
 ## Repo structure
 
 ```
 dotfiles/
 ├── install.ps1                 ← run this on a new machine
-├── sync.ps1                    ← pull current config back into repo
+├── sync.ps1                    ← sync current config back into repo
 ├── README.md
 ├── powershell/
 │   └── profile.ps1
