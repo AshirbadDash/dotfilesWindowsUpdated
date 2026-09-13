@@ -7,7 +7,7 @@ Set-Location $HOME
 # Oh My Posh Prompt
 # ============================================================
 $env:POSH_THEMES_PATH = "$env:USERPROFILE\.config\oh-my-posh\themes"
-oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\agnoster.omp.json" | Invoke-Expression
+oh-my-posh init pwsh --config "C:\Users\swade\.config\oh-my-posh\themes\powerlevel10k_lean.omp.json" | Invoke-Expression
 
 # ============================================================
 # Terminal Icons  (icons in ls / Get-ChildItem output)
@@ -59,7 +59,7 @@ function theme {
     # Persist to profile for next sessions
     $profile_content = Get-Content $PROFILE -Raw
     $updated = $profile_content -replace `
-        '(oh-my-posh init pwsh --config ")[^"]*(")', `
+        '(oh-my-posh init pwsh --config "C:\Users\swade\.config\oh-my-posh\themes\powerlevel10k_lean.omp.json"]*(")', `
         "`${1}$file`${2}"
     [System.IO.File]::WriteAllText($PROFILE, $updated, [System.Text.UTF8Encoding]::new($false))
 
