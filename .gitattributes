@@ -1,0 +1,5 @@
+# Force LF in repo, let Windows convert on checkout
+* text=auto
+*.ps1 text eol=lf
+*.json text eol=lf
+*.md text eol=lf
