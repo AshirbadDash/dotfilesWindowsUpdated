@@ -20,6 +20,54 @@ Import-Module -Name Terminal-Icons
 Import-Module ZLocation
 
 # ============================================================
+# posh-git  (git status info available to the prompt)
+# ============================================================
+Import-Module posh-git
+
+# ============================================================
+# Theme Switcher  -  usage: theme <name>
+# ============================================================
+function theme {
+    param(
+        [Parameter(Position = 0)]
+        [string]$Name
+    )
+
+    $themesPath = "$env:USERPROFILE\.config\oh-my-posh\themes"
+
+    # List available themes if no name given
+    if (-not $Name) {
+        Write-Host "Available themes:" -ForegroundColor Cyan
+        Get-ChildItem $themesPath -Filter "*.omp.json" |
+            ForEach-Object { Write-Host "  $($_.BaseName -replace '\.omp','')" }
+        Write-Host "`nUsage: theme <name>   e.g. theme catppuccin" -ForegroundColor DarkGray
+        return
+    }
+
+    $file = "$themesPath\$Name.omp.json"
+
+    # Try with exact name, then with .omp suffix
+    if (-not (Test-Path $file)) { $file = "$themesPath\$Name" }
+    if (-not (Test-Path $file)) {
+        Write-Host "Theme '$Name' not found. Run 'theme' to see available themes." -ForegroundColor Red
+        return
+    }
+
+    # Apply theme for this session
+    oh-my-posh init pwsh --config $file | Invoke-Expression
+
+    # Persist to profile for next sessions
+    $profile_content = Get-Content $PROFILE -Raw
+    $updated = $profile_content -replace `
+        '(oh-my-posh init pwsh --config ")[^"]*(")', `
+        "`${1}$file`${2}"
+    [System.IO.File]::WriteAllText($PROFILE, $updated, [System.Text.UTF8Encoding]::new($false))
+
+    Write-Host "Theme set to '$Name'" -ForegroundColor Green
+    Write-Host "(Saved to profile — will persist on next open)" -ForegroundColor DarkGray
+}
+
+# ============================================================
 # PSReadLine - Autocompletion & Syntax Colors
 # Only runs in interactive console sessions
 # ============================================================
